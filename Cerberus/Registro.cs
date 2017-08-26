@@ -21,6 +21,7 @@ namespace Cerberus
     public partial class Registro : Form
     {
 
+        public bool existe = false;
         public string _rfid;
 
         public Registro(string rfid="fffffffffff")
@@ -32,6 +33,34 @@ namespace Cerberus
             {
                 rfidTextBox.Text = _rfid;
                 rfidTextBox.Enabled = false;
+
+                MySqlConnection conn = conecta();
+                conn.Open();
+
+                string consulta = "SELECT Count(*) FROM control WHERE rfid = '" + _rfid + "';";
+                MySqlCommand query = new MySqlCommand(consulta, conn);
+                int d = Convert.ToInt32(query.ExecuteScalar());
+
+                if(d == 1)
+                {
+                    consulta = "SELECT nombre, apellidos, dni, fecha, localidad, direccion, rfid FROM control WHERE rfid = '" + _rfid + "';";
+                    query = new MySqlCommand(consulta, conn);
+                    MySqlDataReader read = query.ExecuteReader();
+
+
+
+                    while (read.Read())
+                    {
+                        nombreTextBox.Text = read.GetString(0);
+                        apellidosTextBox.Text = read.GetString(1);
+                        dniTextBox.Text = read.GetString(2);
+                        nacimientoDateTimePicker1.Text = read.GetString(3);
+                        localidadTextBox.Text = read.GetString(4);
+                        direccionTextBox.Text = read.GetString(5);
+                        rfidTextBox.Text = read.GetString(6);
+                    }
+                }
+
             }
         }
 
@@ -54,14 +83,9 @@ namespace Cerberus
                 return;
             }
 
-            MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
-            builder.Server = "localhost";
-            builder.UserID = "root";
-            builder.Password = "AleDelgado1994";
-            builder.Database = "cerberus";
-            builder.Port = 3306;
-           
-            MySqlConnection conn = new MySqlConnection(builder.ConnectionString);
+
+
+            MySqlConnection conn = conecta();
             conn.Open();
 
             string consulta = "SELECT Count(*) FROM control WHERE dni = '" + dni + "';";
@@ -97,6 +121,27 @@ namespace Cerberus
 
 
 
+        }
+
+        public MySqlConnection conecta()
+        {
+            MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
+            builder.Server = "localhost";
+            builder.UserID = "root";
+            builder.Password = "30121994";
+            builder.Database = "cerberus";
+            builder.Port = 3306;
+
+            MySqlConnection conn = new MySqlConnection(builder.ConnectionString);
+
+            return conn;
+
+        }
+
+
+        private void salirButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

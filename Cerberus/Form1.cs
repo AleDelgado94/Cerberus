@@ -14,7 +14,6 @@ namespace Cerberus
 {
     public partial class Cerberus : Form
     {
-
         public string ultima_leida;
         Registro reg;
         public string _data;
@@ -30,10 +29,10 @@ namespace Cerberus
             myDelegate = new RFID(registrar);
 
             serialPort.BaudRate = 9600;
-            serialPort.PortName = "COM7";
+            serialPort.PortName = "COM3";
 
             serialPort.DataReceived += new SerialDataReceivedEventHandler(leerSerialArduino);
-            //serialPort.Open();
+            serialPort.Open();
 
         }
 
